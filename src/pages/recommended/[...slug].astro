@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import { activeReferrals, referralDisclosure } from '../../data/site';
+// The page only exists when at least one referral link is fully configured in src/data/site.ts.
+export function getStaticPaths() {
+  return activeReferrals.length ? [{ params: { slug: undefined } }] : [];
+}
+---
+<Base title="Recommended" description="Tools and services I use or recommend, with an honest note about referral links." path="/recommended/">
+  <div class="wrap page article-page">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Recommended</span></nav>
+    <h1>Recommended</h1>
+    <p class="lede">{referralDisclosure}</p>
+    <div class="article-grid"><div class="prose">
+      {activeReferrals.map((r) => (
+        <>
+          <h2>{r.label}</h2>
+          <p>{r.description}</p>
+          <p><a href={r.url} rel="sponsored noopener noreferrer" target="_blank">{r.label}</a></p>
+          {r.disclosure && <p class="muted small">{r.disclosure}</p>}
+        </>
+      ))}
+    </div></div>
+  </div>
+</Base>

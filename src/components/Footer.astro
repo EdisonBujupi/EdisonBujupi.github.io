@@ -1,0 +1,19 @@
+---
+import { site, social } from '../data/site';
+const year = new Date().getUTCFullYear();
+---
+<footer class="colophon">
+  <div class="wrap colophon-grid">
+    <div>
+      <p class="colophon-title">{site.name}</p>
+      <p class="muted">Independent research notes. This website is owned and operated by me. It is not operated, endorsed or maintained by Wazuh.</p>
+    </div>
+    <ul class="colophon-links">
+      <li><a href="/research/">Research</a></li>
+      <li><a href="/rss.xml">RSS feed</a></li>
+      {social.github && <li><a href={social.github} rel="me noopener noreferrer" target="_blank">GitHub</a></li>}
+      {social.linkedin && <li><a href={social.linkedin} rel="me noopener noreferrer" target="_blank">LinkedIn</a></li>}
+    </ul>
+    <p class="muted small">&copy; {year} {site.author.name}. Wazuh is a trademark of its owner.</p>
+  </div>
+</footer>

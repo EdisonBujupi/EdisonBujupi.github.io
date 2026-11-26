@@ -1,0 +1,19 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { fmtDate, isoDate, categoryName, readingTime } from '../lib';
+interface Props { entry: CollectionEntry<'articles'>; showCategory?: boolean }
+const { entry, showCategory = true } = Astro.props;
+const d = entry.data;
+---
+<article class="row">
+  <time class="row-date" datetime={isoDate(d.pubDate)}>{fmtDate(d.pubDate)}</time>
+  <div class="row-main">
+    <h3><a href={`/research/${entry.id}/`}>{d.title}</a></h3>
+    <p>{d.description}</p>
+    <p class="meta">
+      {showCategory && <a href={`/research/category/${d.category}/`}>{categoryName(d.category)}</a>}
+      {showCategory && <span aria-hidden="true"> · </span>}
+      <span>{readingTime(entry.body)} min read</span>
+    </p>
+  </div>
+</article>

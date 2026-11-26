@@ -1,0 +1,21 @@
+---
+import { site, nav, activeReferrals } from '../data/site';
+const path = Astro.url.pathname;
+const items = [...nav, ...(activeReferrals.length ? [{ label: 'Recommended', href: '/recommended/' }] : [])];
+const current = (href: string) => path === href || path.startsWith(href);
+---
+<header class="masthead">
+  <div class="wrap masthead-row">
+    <a class="wordmark" href="/" aria-label={`${site.name}, home`}>
+      <span class="wordmark-name">{site.name}</span>
+      <span class="wordmark-sub">Cybersecurity Research &amp; Engineering</span>
+    </a>
+    <nav aria-label="Main">
+      <ul>
+        {items.map((i) => (
+          <li><a href={i.href} aria-current={current(i.href) ? 'page' : undefined}>{i.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>

@@ -1,0 +1,28 @@
+---
+import Base from '../../layouts/Base.astro';
+import { allProjects, fmtDate, isoDate } from '../../lib';
+import { site } from '../../data/site';
+const projects = await allProjects();
+const crumbs = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+  { '@type': 'ListItem', position: 1, name: 'Home', item: site.url + '/' },
+  { '@type': 'ListItem', position: 2, name: 'Projects', item: site.url + '/projects/' } ] };
+---
+<Base title="Projects & Investigations" description="Documented technical work: the problem, the environment, the method, the evidence, the findings and the limitations of each project." path="/projects/" jsonLd={[crumbs]}>
+  <div class="wrap page">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Projects</span></nav>
+    <h1>Projects &amp; Investigations</h1>
+    <p class="lede">Each entry states the problem, the environment, the method, the evidence, the findings and the limits.</p>
+    <div class="rows">
+      {projects.map((p) => (
+        <article class="row">
+          <span class="row-date">{p.data.type}</span>
+          <div class="row-main">
+            <h3><a href={`/projects/${p.id}/`}>{p.data.title}</a></h3>
+            <p>{p.data.summary}</p>
+            <p class="meta">{p.data.status} · <time datetime={isoDate(p.data.date)}>{fmtDate(p.data.date)}</time> · {p.data.tools.join(', ')}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</Base>

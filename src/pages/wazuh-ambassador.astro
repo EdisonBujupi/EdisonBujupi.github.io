@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import ArticleRow from '../components/ArticleRow.astro';
+import { site, wazuhLinks } from '../data/site';
+import { allArticles } from '../lib';
+const articles = (await allArticles()).filter((a) => a.data.wazuhContribution);
+const crumbs = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+  { '@type': 'ListItem', position: 1, name: 'Home', item: site.url + '/' },
+  { '@type': 'ListItem', position: 2, name: 'Wazuh Ambassador', item: site.url + '/wazuh-ambassador/' } ] };
+---
+<Base title="Wazuh Ambassador" description="My contributions as a member of the Wazuh Ambassadors Program: technical articles from my own lab, reviewed before publication." path="/wazuh-ambassador/" jsonLd={[crumbs]}>
+  <div class="wrap page article-page">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Wazuh Ambassador</span></nav>
+    <h1>Wazuh Ambassador</h1>
+    <p class="lede">I am a member of the Wazuh Ambassadors Program. This page collects what I have contributed to the Wazuh community.</p>
+    <div class="article-grid"><div class="prose">
+      <h2>Community involvement</h2>
+      <p>My contributions are technical articles based on my own lab work. They are submitted through the program and reviewed by the Wazuh team before I publish them. I describe what I tested, how to reproduce it and what I did not test.</p>
+    </div></div>
+    <section class="block" aria-labelledby="pubs-h">
+      <h2 id="pubs-h" class="label">Technical publications</h2>
+      {articles.length > 0 ? <div class="rows">{articles.map((a) => <ArticleRow entry={a} />)}</div> : <p class="muted">No publications yet.</p>}
+    </section>
+    <div class="article-grid"><div class="prose">
+      <h2>Official Wazuh resources</h2>
+      <ul>
+        <li><a href={wazuhLinks.home} rel="noopener noreferrer" target="_blank">Wazuh website</a></li>
+        <li><a href={wazuhLinks.ambassadors} rel="noopener noreferrer" target="_blank">Wazuh Ambassadors Program</a></li>
+        <li><a href="https://documentation.wazuh.com/current/index.html" rel="noopener noreferrer" target="_blank">Wazuh documentation</a></li>
+      </ul>
+      <h2>Independence</h2>
+      <p>This website is owned and operated by me. It is not operated, endorsed or maintained by Wazuh, and the articles are not official Wazuh material.</p>
+    </div></div>
+  </div>
+</Base>

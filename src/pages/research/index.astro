@@ -1,0 +1,28 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleRow from '../../components/ArticleRow.astro';
+import { categories, site } from '../../data/site';
+import { allArticles } from '../../lib';
+const articles = await allArticles();
+const counts = Object.fromEntries(categories.map((c) => [c.slug, articles.filter((a) => a.data.category === c.slug).length]));
+const crumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: site.url + '/' },
+    { '@type': 'ListItem', position: 2, name: 'Research', item: site.url + '/research/' },
+  ],
+};
+---
+<Base title="Research & Field Notes" description="Technical articles on detection engineering, Wazuh and security monitoring, incident investigation and documented lab experiments." path="/research/" jsonLd={[crumbs]}>
+  <div class="wrap page">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Research</span></nav>
+    <h1>Research &amp; Field Notes</h1>
+    <p class="lede">Technical articles written for reading and for reproducing. Each one states its environment, its evidence and its limits.</p>
+    <ul class="chips" aria-label="Categories">
+      {categories.map((c) => (
+        <li>{counts[c.slug] > 0 ? <a href={`/research/category/${c.slug}/`}>{c.name} <span class="muted">({counts[c.slug]})</span></a> : <span class="muted">{c.name} (0)</span>}</li>
+      ))}
+    </ul>
+    <div class="rows">{articles.map((a) => <ArticleRow entry={a} />)}</div>
+  </div>
+</Base>

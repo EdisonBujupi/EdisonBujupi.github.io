@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+import ArticleRow from '../components/ArticleRow.astro';
+import { site, social, categories } from '../data/site';
+import { allArticles, allProjects, fmtDate, isoDate, categoryName, readingTime } from '../lib';
+
+const articles = await allArticles();
+const projects = await allProjects();
+const featured = articles.find((a) => a.data.featured) ?? articles[0];
+const recent = articles.filter((a) => a.id !== featured?.id).slice(0, 5);
+const counts = Object.fromEntries(categories.map((c) => [c.slug, articles.filter((a) => a.data.category === c.slug).length]));
+---
+<Base title={site.title} description={site.description} path="/">
+  <section class="hero wrap">
+    <div class="hero-main">
+      <p class="kicker">Field notes from my own lab</p>
+      <h1>Security events, traced back to their source.</h1>
+      <p class="lede">Lab write-ups on detection engineering and security monitoring. Each one shows the configuration, the commands and the evidence, and says what was not tested.</p>
+    </div>
+    <aside class="hero-side" aria-label="Editorial standard">
+      <h2 class="label">Every article answers</h2>
+      <ol class="standard">
+        <li>What was investigated, and why it matters</li>
+        <li>Which environment was used</li>
+        <li>What evidence supports the findings</li>
+        <li>What another practitioner can reproduce</li>
+        <li>What the limitations are</li>
+      </ol>
+    </aside>
+  </section>
+
+  {featured && (
+    <section class="wrap block" aria-labelledby="latest-h">
+      <h2 id="latest-h" class="label">Latest publication</h2>
+      <article class="feature">
+        <p class="meta">
+          <time datetime={isoDate(featured.data.pubDate)}>{fmtDate(featured.data.pubDate)}</time>
+          <span aria-hidden="true"> · </span>
+          <a href={`/research/category/${featured.data.category}/`}>{categoryName(featured.data.category)}</a>
+          <span aria-hidden="true"> · </span>
+          <span>{readingTime(featured.body)} min read</span>
+        </p>
+        <h3><a href={`/research/${featured.id}/`}>{featured.data.title}</a></h3>
+        <p>{featured.data.description}</p>
+        <p><a class="more" href={`/research/${featured.id}/`}>Read the article</a></p>
+      </article>
+    </section>
+  )}
+
+  {recent.length > 0 && (
+    <section class="wrap block" aria-labelledby="recent-h">
+      <h2 id="recent-h" class="label">More research</h2>
+      <div class="rows">{recent.map((a) => <ArticleRow entry={a} />)}</div>
+    </section>
+  )}
+  <section class="wrap block">
+    <p><a class="more" href="/research/">Explore all research</a></p>
+  </section>
+
+  {projects.length > 0 && (
+    <section class="wrap block" aria-labelledby="proj-h">
+      <h2 id="proj-h" class="label">Projects and investigations</h2>
+      <div class="rows">
+        {projects.slice(0, 3).map((p) => (
+          <article class="row">
+            <span class="row-date">{p.data.type}</span>
+            <div class="row-main">
+              <h3><a href={`/projects/${p.id}/`}>{p.data.title}</a></h3>
+              <p>{p.data.summary}</p>
+              <p class="meta">{p.data.status} · {p.data.tools.join(', ')}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="wrap block split" aria-labelledby="amb-h">
+    <h2 id="amb-h" class="label">Wazuh Ambassador</h2>
+    <div>
+      <p>I am a member of the Wazuh Ambassadors Program. My Wazuh contributions are reviewed by the Wazuh team before I publish them, and they are collected on one page.</p>
+      <p><a class="more" href="/wazuh-ambassador/">Wazuh Ambassador contributions</a></p>
+    </div>
+  </section>
+
+  <section class="wrap block split" aria-labelledby="cat-h">
+    <h2 id="cat-h" class="label">Browse by category</h2>
+    <ul class="catlist">
+      {categories.map((c) => (
+        <li>
+          {counts[c.slug] > 0 ? <a href={`/research/category/${c.slug}/`}>{c.name}</a> : <span class="muted">{c.name}</span>}
+          <span class="muted"> ({counts[c.slug]})</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="wrap block split" aria-labelledby="prof-h">
+    <h2 id="prof-h" class="label">Profile</h2>
+    <div>
+      <p>I am a cybersecurity student. I document what I test in my own lab and keep experience, research and experiments clearly separate.</p>
+      <p>
+        <a class="more" href="/about/">About me</a>
+        {social.github && <> · <a href={social.github} rel="me noopener noreferrer" target="_blank">GitHub</a></>}
+        {social.linkedin && <> · <a href={social.linkedin} rel="me noopener noreferrer" target="_blank">LinkedIn</a></>}
+      </p>
+    </div>
+  </section>
+</Base>

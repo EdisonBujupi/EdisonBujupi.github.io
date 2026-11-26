@@ -1,0 +1,40 @@
+---
+import { site, social, services } from '../data/site';
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  type?: 'website' | 'article';
+  published?: Date;
+  updated?: Date;
+  noindex?: boolean;
+  jsonLd?: object[];
+}
+const { title, description, path, type = 'website', published, updated, noindex = false, jsonLd = [] } = Astro.props;
+const fullTitle = path === '/' ? site.title : `${title} | ${site.name}`;
+const canonical = new URL(path, site.url).href;
+const image = new URL('/og-default.png', site.url).href;
+---
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex" />}
+<meta property="og:site_name" content={site.name} />
+<meta property="og:locale" content="en_GB" />
+<meta property="og:type" content={type} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={image} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={site.title} />
+{published && <meta property="article:published_time" content={published.toISOString()} />}
+{updated && <meta property="article:modified_time" content={updated.toISOString()} />}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={image} />
+{services.googleSiteVerification && <meta name="google-site-verification" content={services.googleSiteVerification} />}
+{services.bingSiteVerification && <meta name="msvalidate.01" content={services.bingSiteVerification} />}
+{jsonLd.map((o) => <script type="application/ld+json" set:html={JSON.stringify(o)} />)}

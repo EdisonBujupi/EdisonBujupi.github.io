@@ -1,0 +1,15 @@
+---
+import { services } from '../data/site';
+---
+{services.plausibleDomain && <script defer data-domain={services.plausibleDomain} src="https://plausible.io/js/script.js"></script>}
+{services.ga4MeasurementId && (
+  <>
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${services.ga4MeasurementId}`}></script>
+    <script is:inline define:vars={{ id: services.ga4MeasurementId }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', id, { anonymize_ip: true });
+    </script>
+  </>
+)}
