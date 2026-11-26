@@ -11,4 +11,6 @@ export default defineConfig({
     shikiConfig: { theme: 'github-dark-default', wrap: false },
   },
   prefetch: false,
+  // No source maps in the production output.
+  vite: { build: { sourcemap: false } },
 });

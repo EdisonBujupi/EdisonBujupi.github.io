@@ -17,6 +17,7 @@ astro.config.mjs               Astro configuration
 scripts/check-site.mjs         post-build validation (links, metadata, sitemap, RSS)
 public/                        static files
 src/data/site.ts               site-wide settings
+src/data/resources.ts          resource links and categories (/resources/)
 src/content.config.ts          frontmatter schemas
 src/content/articles/          articles (Markdown)
 src/content/projects/          projects (Markdown)
@@ -28,7 +29,7 @@ src/styles/global.css          styles
 
 ## Local commands
 
-Requires Node.js 22.
+Requires Node.js 22.18 or newer.
 
 ```sh
 npm ci           # install dependencies
@@ -40,6 +41,10 @@ npm run check    # validate the build output
 ## Deployment
 
 Every push to `main` runs the GitHub Actions workflow. It runs `npm ci`, `npm run build` and `npm run check`, then publishes `dist/` to GitHub Pages.
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
 ## Independence
 

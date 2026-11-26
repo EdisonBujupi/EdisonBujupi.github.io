@@ -12,7 +12,7 @@ export const site = {
   locale: 'en',
   author: {
     name: 'Edison Bujupi',
-    jobTitle: 'Cybersecurity student',
+    jobTitle: 'Cybersecurity engineer',
     // Optional author image path, relative to the site root. Empty: no image is referenced.
     image: '',
   },

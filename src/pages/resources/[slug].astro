@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import { site } from '../../data/site';
+import { activeResourceCategories, resourcesIn } from '../../data/resources';
+export function getStaticPaths() {
+  return activeResourceCategories.map((cat) => ({ params: { slug: cat.slug }, props: { cat, items: resourcesIn(cat.slug) } }));
+}
+const { cat, items } = Astro.props;
+const path = `/resources/${cat.slug}/`;
+const crumbs = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+  { '@type': 'ListItem', position: 1, name: 'Home', item: site.url + '/' },
+  { '@type': 'ListItem', position: 2, name: 'Resources', item: site.url + '/resources/' },
+  { '@type': 'ListItem', position: 3, name: cat.name, item: site.url + path } ] };
+---
+<Base title={`${cat.name} resources`} description={cat.description} path={path} jsonLd={[crumbs]}>
+  <div class="wrap page article-page">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/resources/">Resources</a> / <span aria-current="page">{cat.name}</span></nav>
+    <h1>{cat.name}</h1>
+    <p class="lede">{cat.description}</p>
+    <div class="article-grid"><div class="prose">
+      <ul>{items.map((i) => <li><a href={i.url} rel="noopener noreferrer" target="_blank">{i.title}</a>. {i.description}</li>)}</ul>
+      <p><a class="more" href="/resources/">All resource categories</a></p>
+    </div></div>
+  </div>
+</Base>

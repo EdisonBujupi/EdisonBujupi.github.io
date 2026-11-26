@@ -85,6 +85,62 @@ for (const f of [...htmlFiles, path.join(dist, 'rss.xml')]) {
   if (empty.test(h)) err(`${pageUrl(f)}: empty href, src or content attribute`);
 }
 
-console.log(`pages: ${htmlFiles.length}, sitemap urls: ${smUrls.length}, rss items: ${items}`);
+// wording and links that must not be public
+const banned = [/student/i, /5\.0-rc/i];
+for (const f of files.filter((x) => /\.(html|xml|txt|json)$/.test(x))) {
+  const h = fs.readFileSync(f, 'utf8');
+  for (const re of banned) if (re.test(h)) err(`${pageUrl(f)}: contains banned text ${re}`);
+}
+
+// no source maps in the output
+for (const f of files) {
+  if (f.endsWith('.map')) err(`source map in output: ${pageUrl(f)}`);
+  else if (/\.(js|css|html)$/.test(f) && /sourceMappingURL/.test(fs.readFileSync(f, 'utf8'))) err(`${pageUrl(f)}: sourceMappingURL reference`);
+}
+
+// Content-Security-Policy: present on every page, and nothing on the page needs more than the policy allows
+const CSP = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; base-uri 'self'; form-action 'self'";
+for (const f of htmlFiles) {
+  const html = fs.readFileSync(f, 'utf8');
+  const url = pageUrl(f);
+  if (!html.includes(`<meta http-equiv="Content-Security-Policy" content="${CSP}">`)) err(`${url}: missing or changed Content-Security-Policy`);
+  if (!/<meta name="referrer" content="strict-origin-when-cross-origin">/.test(html)) err(`${url}: missing referrer policy`);
+  for (const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)) {
+    const src = (m[1].match(/\ssrc="([^"]+)"/) || [])[1];
+    if (src) { if (!src.startsWith('/')) err(`${url}: third-party script ${src} is blocked by the CSP`); }
+    else if (!/type="application\/ld\+json"/.test(m[1])) err(`${url}: inline script is blocked by the CSP`);
+  }
+  if (/\son[a-z]+="/i.test(html)) err(`${url}: inline event handler is blocked by the CSP`);
+  for (const m of html.matchAll(/<(?:img|source|link|iframe|video|audio)\b[^>]*\s(?:src|srcset|href)="([^"]+)"/g)) {
+    const tag = m[0];
+    if (/^<link\b/.test(tag) && !/rel="(?:stylesheet|icon|preload)"/.test(tag)) continue;
+    if (!/^(\/|data:)/.test(m[1])) err(`${url}: external asset ${m[1]} is blocked by the CSP`);
+  }
+}
+
+// resource category pages: generated from src/data/resources.ts
+const { resourceCategories, resources } = await import('../src/data/resources.ts');
+const active = resourceCategories.filter((c) => resources.some((r) => r.category === c.slug));
+for (const r of resources) if (!resourceCategories.some((c) => c.slug === r.category)) err(`resources: unknown category ${r.category} for ${r.url}`);
+const resIndex = fs.readFileSync(path.join(dist, 'resources/index.html'), 'utf8');
+for (const c of resourceCategories) {
+  const page = `/resources/${c.slug}/`;
+  const isActive = active.includes(c);
+  if (isActive !== exists(page)) err(`resources: ${page} should ${isActive ? '' : 'not '}exist`);
+  if (isActive !== resIndex.includes(`href="${page}"`)) err(`resources: /resources/ should ${isActive ? '' : 'not '}link ${page}`);
+  if (!isActive || !exists(page)) continue;
+  const html = fs.readFileSync(path.join(dist, page, 'index.html'), 'utf8');
+  for (const r of resources.filter((x) => x.category === c.slug)) if (!html.includes(`href="${r.url}"`)) err(`resources: ${page} is missing ${r.url}`);
+  const ld = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
+  const bc = ld.find((o) => o['@type'] === 'BreadcrumbList');
+  const names = bc ? bc.itemListElement.map((i) => i.name).join(' > ') : '';
+  if (names !== `Home > Resources > ${c.name}` || bc.itemListElement[2].item !== SITE + page) err(`resources: ${page} has a wrong BreadcrumbList (${names})`);
+  if (!html.includes('<a href="/resources/">Resources</a>')) err(`resources: ${page} has no breadcrumb link to /resources/`);
+}
+for (const d of fs.readdirSync(path.join(dist, 'resources'), { withFileTypes: true }).filter((e) => e.isDirectory())) {
+  if (!active.some((c) => c.slug === d.name)) err(`resources: unexpected page /resources/${d.name}/`);
+}
+
+console.log(`pages: ${htmlFiles.length}, sitemap urls: ${smUrls.length}, rss items: ${items}, resource categories: ${active.length}`);
 if (errors.length) { console.error(errors.join('\n')); console.error(`\n${errors.length} problem(s)`); process.exit(1); }
 console.log('check: all passed');

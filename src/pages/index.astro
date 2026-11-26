@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import ArticleRow from '../components/ArticleRow.astro';
-import { site, social, categories } from '../data/site';
+import { site, categories } from '../data/site';
 import { allArticles, allProjects, fmtDate, isoDate, categoryName, readingTime } from '../lib';
 
 const articles = await allArticles();
@@ -78,8 +78,8 @@ const counts = Object.fromEntries(categories.map((c) => [c.slug, articles.filter
   <section class="wrap block split" aria-labelledby="amb-h">
     <h2 id="amb-h" class="label">Wazuh Ambassador</h2>
     <div>
-      <p>I am a member of the Wazuh Ambassadors Program. My Wazuh contributions are reviewed by the Wazuh team before I publish them, and they are collected on one page.</p>
-      <p><a class="more" href="/wazuh-ambassador/">Wazuh Ambassador contributions</a></p>
+      <p>I am a member of the Wazuh Ambassadors Program. My approved contributions are listed on the Wazuh Ambassador page.</p>
+      <p><a class="more" href="/wazuh-ambassador/">View contributions</a></p>
     </div>
   </section>
 
@@ -93,17 +93,5 @@ const counts = Object.fromEntries(categories.map((c) => [c.slug, articles.filter
         </li>
       ))}
     </ul>
-  </section>
-
-  <section class="wrap block split" aria-labelledby="prof-h">
-    <h2 id="prof-h" class="label">Profile</h2>
-    <div>
-      <p>I am a cybersecurity student. I document what I test in my own lab and keep experience, research and experiments clearly separate.</p>
-      <p>
-        <a class="more" href="/about/">About me</a>
-        {social.github && <> · <a href={social.github} rel="me noopener noreferrer" target="_blank">GitHub</a></>}
-        {social.linkedin && <> · <a href={social.linkedin} rel="me noopener noreferrer" target="_blank">LinkedIn</a></>}
-      </p>
-    </div>
   </section>
 </Base>

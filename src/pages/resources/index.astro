@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import { site } from '../../data/site';
+import { activeResourceCategories, resourcesIn } from '../../data/resources';
+const crumbs = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+  { '@type': 'ListItem', position: 1, name: 'Home', item: site.url + '/' },
+  { '@type': 'ListItem', position: 2, name: 'Resources', item: site.url + '/resources/' } ] };
+---
+<Base title="Resources" description="Technical references used in my Wazuh and detection engineering work: official documentation and technique references." path="/resources/" jsonLd={[crumbs]}>
+  <div class="wrap page">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Resources</span></nav>
+    <h1>Resources</h1>
+    <p class="lede">References I actually used while writing the articles, grouped by topic.</p>
+    <div class="rows">
+      {activeResourceCategories.map((c) => {
+        const n = resourcesIn(c.slug).length;
+        return (
+          <article class="row">
+            <span class="row-date">{n} {n === 1 ? 'resource' : 'resources'}</span>
+            <div class="row-main">
+              <h3><a href={`/resources/${c.slug}/`}>{c.name}</a></h3>
+              <p>{c.description}</p>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  </div>
+</Base>

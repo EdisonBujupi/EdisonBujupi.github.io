@@ -8,18 +8,14 @@ const crumbs = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', it
   { '@type': 'ListItem', position: 1, name: 'Home', item: site.url + '/' },
   { '@type': 'ListItem', position: 2, name: 'Wazuh Ambassador', item: site.url + '/wazuh-ambassador/' } ] };
 ---
-<Base title="Wazuh Ambassador" description="My contributions as a member of the Wazuh Ambassadors Program: technical articles from my own lab, reviewed before publication." path="/wazuh-ambassador/" jsonLd={[crumbs]}>
+<Base title="Wazuh Ambassador" description="Approved contributions by Edison Bujupi as a member of the Wazuh Ambassadors Program, with links to official Wazuh resources." path="/wazuh-ambassador/" jsonLd={[crumbs]}>
   <div class="wrap page article-page">
     <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Wazuh Ambassador</span></nav>
     <h1>Wazuh Ambassador</h1>
-    <p class="lede">I am a member of the Wazuh Ambassadors Program. This page collects what I have contributed to the Wazuh community.</p>
-    <div class="article-grid"><div class="prose">
-      <h2>Community involvement</h2>
-      <p>My contributions are technical articles based on my own lab work. They are submitted through the program and reviewed by the Wazuh team before I publish them. I describe what I tested, how to reproduce it and what I did not test.</p>
-    </div></div>
+    <p class="lede">I am a member of the Wazuh Ambassadors Program. My approved contributions are listed below.</p>
     <section class="block" aria-labelledby="pubs-h">
-      <h2 id="pubs-h" class="label">Technical publications</h2>
-      {articles.length > 0 ? <div class="rows">{articles.map((a) => <ArticleRow entry={a} />)}</div> : <p class="muted">No publications yet.</p>}
+      <h2 id="pubs-h" class="label">Approved contributions</h2>
+      {articles.length > 0 ? <div class="rows">{articles.map((a) => <ArticleRow entry={a} />)}</div> : <p class="muted">No contributions are listed yet.</p>}
     </section>
     <div class="article-grid"><div class="prose">
       <h2>Official Wazuh resources</h2>
