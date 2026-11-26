@@ -27,7 +27,7 @@ export const social = {
 export const nav = [
   { label: 'Research', href: '/research/' },
   { label: 'Projects', href: '/projects/' },
-  { label: 'Wazuh Ambassador', href: '/wazuh-ambassador/' },
+  { label: 'Contributions', href: '/wazuh-ambassador/' },
   { label: 'Resources', href: '/resources/' },
   { label: 'About', href: '/about/' },
 ];
